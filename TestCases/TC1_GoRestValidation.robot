@@ -4,13 +4,18 @@ Library     RequestsLibrary
 Library     JSONLibrary
 Library     Collections
 
+Resource  ../LibFiles/Source/common_keywords.robot
+
 *** Variables ***
 ${base_url}=    https://gorest.co.in/public/v2
 @{json_elements}=   id  name    email   gender  status
 ${access_token}=    Bearer dd71a83f4d33aec0f179fdf1476c0d1d6e1e82e6e7050432de18eb6fe3fade7e
 ${access_token_invalid}=    Bearer 0071a83f4d33aec0f179fdf1476c0d1d6e1e82e6e7050432de18eb6fe3fade7e
 *** Test Cases ***
+
 TC1:Get_userInfo
+    [Documentation]     Test to validate GoRest Get operations
+    [Tags]      GoRestFunctional
     create session  testsession     ${base_url}
     ${response}=    GET On Session  testsession    /users
     #${user_email}=      get value from json     ${response_content}     $.[0].email
@@ -36,20 +41,12 @@ TC1:Get_userInfo
 
     #validate X-Pagination-Limit header value
     should be equal  ${response_header_value}       20
+    #Validate Json Get Json Response
+    Validate_Json_Resonse   ${response_body}    ${json_elements}
 
-    FOR    ${jsonValues}   IN      @{response_body}
-        #log to console      ${\n}
-        #log to console      ${jsonValues}
-        FOR     ${item}     IN      @{json_elements}
-            #Json respone validation
-            should contain      ${jsonValues}   ${item}
-            #Json response value validation
-            should not be empty     ${jsonValues}.${item}
-            #email validation
-            should match regexp     ${jsonValues}.email     ([a-zA-Z0-9_.-])+@([a-zA-Z0-9])+.([a-zA-Z0-9])+
-        END
-    END
 TC2:Create User
+    [Documentation]     Validate GoRest Post call
+    [Tags]  GoRestFunctional
     create session  testsession     ${base_url}
     ${header}=  create dictionary       Authorization=${access_token}   Content-Type=application/json
     ${numbers}=    Evaluate    random.sample(range(1, 110000), 4)    random
@@ -85,6 +82,8 @@ TC2:Create User
     should be equal     ${response_code}    422
 
 TC3:Update User Details
+    [Documentation]     Validate GoRest Patch call
+    [Tags]      GoRestFunctional
     create session  testsession     ${base_url}
     ${header}=  create dictionary       Authorization=${access_token}   Content-Type=application/json
     ${numbers}=    Evaluate    random.sample(range(1, 110000), 4)    random
@@ -120,6 +119,8 @@ TC3:Update User Details
     should be equal     ${response_code}    401
 
 TC4:Delete User
+    [Documentation]     Validate GoRest Delete call
+    [Tags]      GoRestFunctional
     create session  testsession     ${base_url}
     ${header}=  create dictionary       Authorization=${access_token}   Content-Type=application/json
     #${numbers}=    Evaluate    random.sample(range(1, 110000), 4)    random
