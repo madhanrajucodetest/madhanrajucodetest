@@ -8,7 +8,7 @@ Library     LibFiles/util.py
 
 *** Keywords ***
 
-Validate_Json_Resonse
+Validate_Json_Response
     [Documentation]     validate API JSon response
     [Arguments]     ${response_body}    ${json_elements}
     log to console  ${json_elements}

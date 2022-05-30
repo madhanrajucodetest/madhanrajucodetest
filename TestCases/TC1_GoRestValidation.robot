@@ -42,7 +42,7 @@ TC1:Get_userInfo
     #validate X-Pagination-Limit header value
     should be equal  ${response_header_value}       20
     #Validate Json Get Json Response
-    Validate_Json_Resonse   ${response_body}    ${json_elements}
+    Validate_Json_Response   ${response_body}    ${json_elements}
 
 TC2:Create User
     [Documentation]     Validate GoRest Post call
