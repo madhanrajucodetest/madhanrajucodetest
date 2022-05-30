@@ -27,17 +27,19 @@ TC1:Get_userInfo
     #validation
 
     #status code 200 validation
-    ${status_code}=     convert to string   ${response.status_code}
-    should be equal  ${status_code}     200
+
+    #${status_code}=     convert to string   ${response.status_code}
+    #should be equal  ${status_code}     200
+    Validate_Response_Status_Code      ${response}     200
+
     #Negative scenario - 404
     ${negative_response_404}=    get request  testsession    /user
-    ${error_code404_validation}=   convert to string   ${negative_response_404.status_code}
-    should be equal  ${error_code404_validation}     404
+    Validate_Response_Status_Code      ${negative_response_404}     404
+
+
     #Validate Status code 400
     ${negative_response_400}=    get request  testsession    /users9a039039;s<!+>
-    ${error_code400_validation}=   convert to string   ${negative_response_400.status_code}
-    should be equal  ${error_code400_validation}     400
-
+    Validate_Response_Status_Code      ${negative_response_400}     400
 
     #validate X-Pagination-Limit header value
     should be equal  ${response_header_value}       20
@@ -62,24 +64,21 @@ TC2:Create User
     log to console      ${customer_id}
 
     #Validate Status code of Post call
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    201
+    Validate_Response_Status_Code      ${response}     201
 
     #validate invalid Authentication code - 401
     ${header}=  create dictionary       Authorization=${access_token_invalid}   Content-Type=application/json
     ${numbers}=    Evaluate    random.sample(range(1, 110000), 4)    random
     ${post_data}=    create dictionary      name=Raj${numbers[0]}       gender=male     email=test${numbers[0]}@gmail.com       status=active
     ${response}=    post request    testsession   /users  data=${post_data}    headers=${header}
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    401
+    Validate_Response_Status_Code      ${response}     401
 
-    #validate invalid Authentication code - 422 -- Data validation failed
+    #validate code - 422 -- Data validation failed
     ${header}=  create dictionary       Authorization=${access_token}   Content-Type=application/json
     ${numbers}=    Evaluate    random.sample(range(1, 110000), 4)    random
     ${post_data}=    create dictionary      name=Raj${numbers[0]}   gender=male     email=test${numbers[0]}@gmail.com<script>alert(1)</script>       status=active
     ${response}=    post request    testsession   /users  data=${post_data}    headers=${header}
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    422
+    Validate_Response_Status_Code      ${response}     422
 
 TC3:Update User Details
     [Documentation]     Validate GoRest Patch call
@@ -95,13 +94,11 @@ TC3:Update User Details
     log to console  ${customer_id}
 
     #Validate Status code of Patch request
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    200
+    Validate_Response_Status_Code      ${response}     200
 
     #Validation -- -ve scenario validate error status code 404
     ${response}=    patch request   testsession   /users/abc  data=${post_data}    headers=${header}
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    404
+    Validate_Response_Status_Code      ${response}     404
 
     #Validation error message handling
     ${response_body}=   convert to string  ${response.content}
@@ -115,8 +112,7 @@ TC3:Update User Details
     ${response_body}=   convert to string  ${response.content}
 
     #Validate Status code of Patch request
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    401
+    Validate_Response_Status_Code      ${response}     401
 
 TC4:Delete User
     [Documentation]     Validate GoRest Delete call
@@ -131,8 +127,7 @@ TC4:Delete User
     log to console  ${response.content}
 
     #Validate Status code of Patch request
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    204
+    Validate_Response_Status_Code      ${response}     204
 
     #Validate invalid Auth - -ve scenario -- 401
     ${header}=  create dictionary       Authorization=${access_token_invalid}   Content-Type=application/json
@@ -144,5 +139,4 @@ TC4:Delete User
     log to console  ${response.content}
 
     #Validate Status code of Patch request
-    ${response_code}=   convert to string       ${response.status_code}
-    should be equal     ${response_code}    401
+    Validate_Response_Status_Code      ${response}     401
